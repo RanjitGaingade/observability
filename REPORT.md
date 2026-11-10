@@ -72,5 +72,5 @@ This is a learning environment. Change the default Grafana password, pin and reg
 ![Prometheus](Screenshots/Prometheus.png)
 ![Loki](Screenshots/Loki.png)
 ![Jaeger](Screenshots/Jaeger.png)
-
+![diagram](Screenshots/diagram.png)
 
