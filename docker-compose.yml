@@ -1,0 +1,82 @@
+services:
+  app:
+    build: ./app
+    container_name: demo-api
+    environment:
+      OTEL_SERVICE_NAME: demo-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+    ports:
+      - "8000:8000"
+    volumes:
+      - app-logs:/var/log/app
+    depends_on:
+      - otel-collector
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: prometheus
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - app
+
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: loki
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+
+  alloy:
+    image: grafana/alloy:v1.10.2
+    container_name: alloy
+    command: ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - app-logs:/var/log/app:ro
+    depends_on:
+      - loki
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    container_name: jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.136.0
+    container_name: otel-collector
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    depends_on:
+      - jaeger
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+
+volumes:
+  app-logs:
+  grafana-data:

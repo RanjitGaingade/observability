@@ -1,0 +1,57 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Logs
+*.log
+logs/
+*.jsonl
+
+# Runtime data
+data/
+tmp/
+temp/
+
+# Docker
+.docker/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test and coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+	
