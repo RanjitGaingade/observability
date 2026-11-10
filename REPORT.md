@@ -4,7 +4,7 @@
 Build a Docker Compose environment that correlates application metrics, centralized logs and distributed traces.
 
 ## Architecture
-![diagram](Screenshots/diagram.png)
+![Observability Architecture](Screenshots/diagram.png)
 - FastAPI exposes `/metrics`; Prometheus scrapes it every 5 seconds.
 - The app writes structured JSON logs to a shared volume.
 - Grafana Alloy tails the log file and pushes entries to Loki.
